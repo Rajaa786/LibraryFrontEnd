@@ -16,17 +16,18 @@ import axios from "axios";
 import { useParams, useLocation, useNavigate } from "react-router-dom";
 
 function BookDetailsPage({ studentList, addStatus, onUpdateHandler }) {
-  const book_id = useParams();
+  const { book_id } = useParams();
   const navigate = useNavigate();
   const state = useLocation().state;
 
   let book_name = "";
   let author_name = "";
-  let borrowed_by = -1;
-  let borrowed_date = new Date();
-  let expected_return_date = new Date();
+  let borrowed_by = 0;
+  let borrowed_date = null;
+  let expected_return_date = null;
   if (state) {
-    borrowed_by = state.index;
+    borrowed_by = state.stud_id;
+    // console.log(state.restOfData);
     [book_name, author_name, borrowed_date, expected_return_date] = [
       state.restOfData.book_name,
       state.restOfData.author_name,
@@ -34,6 +35,10 @@ function BookDetailsPage({ studentList, addStatus, onUpdateHandler }) {
       state.restOfData.expected_return_date,
     ];
   }
+  // if (borrowed_by === 0) {
+  //   borrowed_date = new Date();
+  //   expected_return_date = new Date();
+  // }
 
   const [borrowedDateValue, setBorrowedValue] = useState(new Date());
   const [returnDateValue, setReturnValue] = useState(new Date());
@@ -49,6 +54,8 @@ function BookDetailsPage({ studentList, addStatus, onUpdateHandler }) {
     setBorrowedValue(borrowed_date);
     setReturnValue(expected_return_date);
   }, []);
+
+  // console.log(borrowedBy);
 
   const handleBorrowChange = (event) => {
     setBorrowedValue(event);
@@ -82,16 +89,10 @@ function BookDetailsPage({ studentList, addStatus, onUpdateHandler }) {
     let data = {
       book_name: bookValue,
       author: authorValue,
-      borrowed_by:
-        // addStatus?
-        borrowedBy === 0
-          ? "None"
-          : [
-              studentList[borrowedBy].first_name,
-              studentList[borrowedBy].last_name,
-            ].join(" "),
-      borrowed_date: borrowedDateValue,
-      return_date: returnDateValue,
+      student_id: borrowedBy,
+      borrowed_date: borrowedBy === 0 ? null : borrowedDateValue,
+      return_date: borrowedBy === 0 ? null : returnDateValue,
+      student_d: borrowedBy,
     };
     console.log(data);
     if (addStatus) {
@@ -119,7 +120,7 @@ function BookDetailsPage({ studentList, addStatus, onUpdateHandler }) {
   const editClickHandler = () => {
     setSaveDisable(false);
   };
-  // console.log(studentList[0]);
+
   return (
     <Box
       sx={{
@@ -188,12 +189,13 @@ function BookDetailsPage({ studentList, addStatus, onUpdateHandler }) {
             readOnly={!addStatus && saveDisabled}
             required
           >
-            <MenuItem value={-1}>
+            <MenuItem value={0}>
               <em>None</em>
             </MenuItem>
             {studentList.map((student, index) => {
+              if (index === 0) return null;
               return (
-                <MenuItem key={student.id} value={index}>
+                <MenuItem key={student.id} value={student.id}>
                   {[student.first_name, student.last_name].join(" ")}
                 </MenuItem>
               );

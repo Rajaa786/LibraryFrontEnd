@@ -37,9 +37,19 @@ const columns = [
   },
 ];
 
-function BookList({ bookList }) {
+function BookList({ bookList, studentList }) {
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(10);
+
+  const returnConcatenatedName = (student_id) => {
+    if (student_id === 0) return "None";
+    let tmpIndex = studentList.findIndex((student) => {
+      return student.id === student_id;
+    });
+    return (
+      studentList[tmpIndex].first_name + " " + studentList[tmpIndex].last_name
+    );
+  };
 
   const handleChangePage = (event, newPage) => {
     setPage(newPage);
@@ -76,14 +86,16 @@ function BookList({ bookList }) {
               .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
               .map((book, index) => {
                 const { id, ...restOfData } = book;
-                // console.log(restOfData);
                 return (
                   <TableRow hover role="checkbox" tabIndex={-1} key={book.id}>
                     <TableCell align="center">
                       {page * rowsPerPage + index + 1}
                     </TableCell>
                     {columns.map((column) => {
-                      const value = book[column.id];
+                      const value =
+                        column.id == "borrowed_by"
+                          ? returnConcatenatedName(book.stud_id)
+                          : book[column.id];
                       return (
                         <TableCell key={column.id} align={column.align}>
                           {column.format && typeof value === "number"
@@ -97,7 +109,7 @@ function BookList({ bookList }) {
                         to={`/bookDetails/${id}`}
                         state={{
                           restOfData,
-                          index,
+                          stud_id: book.stud_id,
                         }}
                       >
                         <EditOutlinedIcon />

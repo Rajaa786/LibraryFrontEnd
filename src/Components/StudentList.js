@@ -73,6 +73,7 @@ function StudentList({ studentList }) {
             {studentList
               .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
               .map((student, index) => {
+                if (index === 0) return null;
                 return (
                   <TableRow
                     hover
@@ -81,7 +82,7 @@ function StudentList({ studentList }) {
                     key={student.id}
                   >
                     <TableCell align="center">
-                      {page * rowsPerPage + index + 1}
+                      {page * rowsPerPage + index}
                     </TableCell>
                     {columns.map((column) => {
                       const value = student[column.id];

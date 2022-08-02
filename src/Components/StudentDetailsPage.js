@@ -10,6 +10,7 @@ import { useParams, useLocation, useNavigate } from "react-router-dom";
 
 function StudentDetailsPage({ addStatus, onUpdateHandler }) {
   const { student_id } = useParams();
+
   const navigate = useNavigate();
   const state = useLocation().state;
   let first_name = "";
@@ -32,7 +33,6 @@ function StudentDetailsPage({ addStatus, onUpdateHandler }) {
     let updatedValue = event.target.value;
     switch (event.target.id) {
       case "first_name":
-        console.log(saveDisabled);
         setFirstName(updatedValue);
         break;
       case "last_name":
@@ -57,20 +57,20 @@ function StudentDetailsPage({ addStatus, onUpdateHandler }) {
       first_name: capitalizeFirstLetter(firstName),
       last_name: capitalizeFirstLetter(lastName),
     };
-    console.log(data);
 
     if (addStatus) {
       axios.post("/addNewStudent", data).then((res) => {
-        console.log(res);
+        console.log(res.data);
       });
     } else {
+      // console.log(student_id);
       axios
         .put(`/updateStudent/${student_id}`, data)
         .then((res) => {
-          // console.log(res);
+          console.log(res.data);
         })
-        .then((err) => {
-          console.log("student update error" + err);
+        .catch((err) => {
+          console.log("student update error " + err);
         });
     }
     onUpdateHandler("students");

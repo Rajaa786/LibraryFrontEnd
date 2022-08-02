@@ -26,6 +26,7 @@ function App() {
       .get("/getStudents")
       .then((res) => {
         setStudentList(res.data);
+        // console.log(res.data);
       })
       .catch((err) => {
         console.log(err);
@@ -38,6 +39,7 @@ function App() {
       .get("/getBooks")
       .then((res) => {
         setBookList(res.data);
+        console.log(res.data);
       })
       .catch((err) => {
         console.log(err);
@@ -112,7 +114,7 @@ function App() {
           <Route
             exact
             path="/books"
-            element={<BookList bookList={bookList} />}
+            element={<BookList bookList={bookList} studentList={studentList} />}
           ></Route>
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
